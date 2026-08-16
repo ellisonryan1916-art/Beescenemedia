@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bee Scene Media | Youth Sports Photography & Video</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load PayPal JavaScript SDK: replace YOUR_PUBLIC_CLIENT_ID with your public client ID -->
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PUBLIC_CLIENT_ID&currency=USD"></script>
+</head>
+<body class="bg-neutral-950 text-neutral-100 min-h-screen flex flex-col items-center justify-between p-4">
+
+  <main class="w-full max-w-md bg-neutral-900 rounded-3xl p-6 shadow-2xl border border-neutral-800 my-auto" role="main" aria-labelledby="site-title">
+    <header class="text-center mb-6">
+      <img src="logo.png" alt="Bee Scene Media Logo" class="w-24 h-24 mx-auto mb-3 object-contain" />
+      <h1 id="site-title" class="text-2xl font-black tracking-wider uppercase text-blue-500">Bee Scene Media</h1>
+      <p class="text-xs text-neutral-400 mt-1 uppercase tracking-widest">Youth Sports Video & Photography</p>
+    </header>
+
+    <form id="orderForm" class="space-y-4" novalidate>
+      <fieldset>
+        <legend class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Athlete & Parent Info</legend>
+
+        <label for="parentName" class="sr-only">Parent / Contact Name</label>
+        <input type="text" id="parentName" name="parentName" placeholder="Parent / Contact Name" required
+          class="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 mb-2"
+          aria-required="true" />
+
+        <label for="email" class="sr-only">Contact Email</label>
+        <input type="email" id="email" name="email" placeholder="Contact Email (for receipt)" required
+          class="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 mb-2"
+          aria-required="true" />
+
+        <label for="athleteDetails" class="sr-only">Athlete Name, Jersey # & Team</label>
+        <input type="text" id="athleteDetails" name="athleteDetails" placeholder="Athlete Name, Jersey # & Team" required
+          class="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
+          aria-required="true" />
+      </fieldset>
+
+      <fieldset>
+        <legend class="block text-xs font-semibold uppercase text-neutral-400 mb-2">Select Service Package</legend>
+
+        <div class="space-y-2" role="radiogroup" aria-label="Service package">
+          <label class="flex items-center justify-between p-3.5 bg-neutral-800/60 border border-neutral-700 rounded-xl cursor-pointer hover:border-blue-500 transition"
+                 for="pkg1">
+            <div class="flex items-center space-x-3">
+              <input id="pkg1" type="radio" name="package" value="45.00" data-name="Action Photo Stills" checked class="accent-blue-500 w-4 h-4" />
+              <div>
+                <p class="text-sm font-bold text-white">Full Game Photo Pack</p>
+                <p class="text-xs text-neutral-400">High-res action stills & digital gallery</p>
+              </div>
+            </div>
+            <span class="font-black text-sm text-blue-400">$45</span>
+          </label>
+
+          <label class="flex items-center justify-between p-3.5 bg-neutral-800/60 border border-neutral-700 rounded-xl cursor-pointer hover:border-blue-500 transition"
+                 for="pkg2">
+            <div class="flex items-center space-x-3">
+              <input id="pkg2" type="radio" name="package" value="75.00" data-name="4K Video Highlight Reel" class="accent-blue-500 w-4 h-4" />
+              <div>
+                <p class="text-sm font-bold text-white">Highlight Reel Video</p>
+                <p class="text-xs text-neutral-400">Edited vertical/horizontal highlight reel</p>
+              </div>
+            </div>
+            <span class="font-black text-sm text-blue-400">$75</span>
+          </label>
+
+          <label class="flex items-center justify-between p-3.5 bg-neutral-800/60 border border-neutral-700 rounded-xl cursor-pointer hover:border-blue-500 transition"
+                 for="pkg3">
+            <div class="flex items-center space-x-3">
+              <input id="pkg3" type="radio" name="package" value="100.00" data-name="Photo + Video Combo" class="accent-blue-500 w-4 h-4" />
+              <div>
+                <p class="text-sm font-bold text-white">Complete Media Combo</p>
+                <p class="text-xs text-neutral-400">Full photo gallery + edited highlight video</p>
+              </div>
+            </div>
+            <span class="font-black text-sm text-blue-400">$100</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div id="paypal-button-container" class="pt-2"></div>
+    </form>
+
+    <div class="mt-6 pt-4 border-t border-neutral-800 text-center">
+      <p class="text-xs text-neutral-500">Need custom team coverage or seasonal rates?</p>
+      <a href="mailto:ryan@beescenemedia.com" class="text-xs font-semibold text-blue-400 hover:underline mt-1 inline-block">
+        ryan@beescenemedia.com
+      </a>
+    </div>
+  </main>
+
+  <script>
+    // Use server-side order creation/capture
+    const useServerSideOrders = true;
+
+    function getSelectedPackage() {
+      const selected = document.querySelector('input[name="package"]:checked');
+      return {
+        name: selected?.getAttribute('data-name') || 'Package',
+        price: selected?.value || '0.00'
+      };
+    }
+
+    function formIsValid() {
+      const parent = document.getElementById('parentName').value.trim();
+      const athlete = document.getElementById('athleteDetails').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      return parent && athlete && emailOk;
+    }
+
+    paypal.Buttons({
+      createOrder: function(data, actions) {
+        if (!formIsValid()) {
+          alert('Please complete name, athlete details, and a valid email.');
+          return Promise.reject('form_invalid');
+        }
+
+        const pkg = getSelectedPackage();
+        const parent = document.getElementById('parentName').value.trim();
+        const athlete = document.getElementById('athleteDetails').value.trim();
+        const email = document.getElementById('email').value.trim();
+
+        if (useServerSideOrders) {
+          return fetch('/api/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              packageName: pkg.name,
+              packagePrice: pkg.price,
+              parentName: parent,
+              athleteDetails: athlete,
+              email: email
+            })
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('Create order failed');
+            return res.json();
+          })
+          .then(data => data.orderID);
+        } else {
+          return actions.order.create({
+            purchase_units: [{
+              description: `${pkg.name} - Athlete: ${athlete} (Contact: ${parent})`,
+              amount: { value: pkg.price, currency_code: 'USD' }
+            }],
+            application_context: { shipping_preference: 'NO_SHIPPING', user_action: 'PAY_NOW' }
+          });
+        }
+      },
+
+      onApprove: function(data, actions) {
+        if (useServerSideOrders) {
+          return fetch('/api/capture-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderID: data.orderID })
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('Capture failed');
+            return res.json();
+          })
+          .then(result => {
+            alert('Thank you! Your booking has been received.');
+          })
+          .catch(err => {
+            console.error(err);
+            alert('Payment processed but an error occurred finalizing your booking. Please contact support.');
+          });
+        } else {
+          return actions.order.capture().then(function(details) {
+            alert('Thank you — payment captured.');
+          });
+        }
+      },
+
+      onError: function(err) {
+        console.error('PayPal error', err);
+        alert('An error occurred while processing payment.');
+      }
+    }).render('#paypal-button-container');
+  </script>
+</body>
+</html>
